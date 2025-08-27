@@ -297,9 +297,7 @@ function createFeedbackCard(feedback) {
       <div class="feedback-message">
         ${escapeHtml(feedback.message)}
       </div>
-      <div class="feedback-id">
-        #${feedback.id} • ${formattedDate}
-      </div>
+    
     </div>
   `;
 }
