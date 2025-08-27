@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KATIPUDROID - All Feedbacks</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/feedback.css">
+  <style>
+    .feedbacks-hero {
+      background: linear-gradient(135deg, #0f1923 0%, #1a2332 100%);
+      padding: 4rem 2rem 2rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .feedbacks-hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(45deg, #ff4655, #ff6b7a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .feedbacks-hero p {
+      font-size: 1.1rem;
+      color: #ccc;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .feedbacks-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+    
+    .feedback-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .stats-info {
+      font-size: 1rem;
+      color: #ccc;
+    }
+    
+    .filter-controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    
+    .search-box {
+      padding: 0.5rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      outline: none;
+    }
+    
+    .search-box::placeholder {
+      color: #aaa;
+    }
+    
+    .sort-select {
+      padding: 0.5rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      outline: none;
+    }
+    
+    .feedbacks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .feedback-card-enhanced {
+      background: linear-gradient(145deg, #1a1a1a 0%, #2a2a2a 100%);
+      padding: 1.5rem;
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .feedback-card-enhanced::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #ff4655, #ff6b7a);
+    }
+    
+    .feedback-card-enhanced:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(255, 70, 85, 0.2);
+      border-color: rgba(255, 70, 85, 0.3);
+    }
+    
+    .feedback-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .feedback-author {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .author-avatar {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(45deg, #ff4655, #ff6b7a);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    
+    .author-info h4 {
+      margin: 0;
+      color: #ff4655;
+      font-size: 1.1rem;
+    }
+    
+    .feedback-date {
+      font-size: 0.85rem;
+      color: #999;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    
+    .feedback-message {
+      color: #ddd;
+      line-height: 1.6;
+      margin: 1rem 0;
+    }
+    
+    .feedback-id {
+      font-size: 0.8rem;
+      color: #666;
+      text-align: right;
+    }
+    
+    .pagination-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    
+    .pagination-btn {
+      padding: 0.8rem 1.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .pagination-btn:hover:not(:disabled) {
+      background: #ff4655;
+      border-color: #ff4655;
+    }
+    
+    .pagination-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .pagination-info {
+      color: #ccc;
+      font-size: 0.9rem;
+    }
+    
+    .loading-spinner {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+      color: #ff4655;
+    }
+    
+    .no-feedbacks {
+      text-align: center;
+      padding: 3rem;
+      color: #999;
+    }
+    
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      margin-bottom: 1rem;
+    }
+    
+    .back-button:hover {
+      background: #ff4655;
+      border-color: #ff4655;
+      color: white;
+      text-decoration: none;
+    }
+    
+    @media (max-width: 768px) {
+      .feedbacks-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .feedback-stats {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .filter-controls {
+        flex-direction: column;
+        width: 100%;
+      }
+      
+      .search-box, .sort-select {
+        width: 100%;
+      }
+      
+      .pagination-controls {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="../img/logo.png" alt="logo" class="img-nav">
+    <i class="fas fa-bars menu-toggle" id="menu-toggle"></i>
+    <nav id="navbar">
+      <a href="../index.html">HOME</a>
+      <a href="../index.html#about">ABOUT</a>
+      <a href="../index.html#developers">DEVELOPERS</a>
+      <a href="feedbacks.html" class="active">FEEDBACKS</a>
+      <a href="../index.html#message">MESSAGE US</a>
+    </nav>
+  </header>
+
+  <section class="feedbacks-hero">
+    <h1><i class="fas fa-comments"></i> Community Feedbacks</h1>
+    <p>Discover what our amazing community thinks about KATIPUDROID. Every feedback helps us improve and create a better gaming experience.</p>
+  </section>
+
+  <div class="feedbacks-container">
+    <a href="../index.html" class="back-button">
+      <i class="fas fa-arrow-left"></i>
+      Back to Home
+    </a>
+
+    <div class="rating-summary" id="rating-summary" style="display: none;">
+      <h4><i class="fas fa-chart-bar"></i> Rating Overview</h4>
+      <div class="rating-breakdown">
+        <div class="avg-rating">
+          <span>Average Rating:</span>
+          <div class="avg-stars" id="avg-stars"></div>
+          <span id="avg-rating-text">0.0</span>
+        </div>
+        <div class="rating-count" id="rating-distribution">
+          Loading...
+        </div>
+      </div>
+    </div>
+
+    <div class="feedback-stats">
+      <div class="stats-info">
+        <span id="total-feedbacks">Loading...</span> total feedbacks
+      </div>
+      <div class="filter-controls">
+        <input type="text" class="search-box" id="search-box" placeholder="Search feedbacks...">
+        <select class="sort-select" id="rating-filter">
+          <option value="all">All Ratings</option>
+          <option value="5">⭐⭐⭐⭐⭐ (5 Stars)</option>
+          <option value="4">⭐⭐⭐⭐ (4 Stars)</option>
+          <option value="3">⭐⭐⭐ (3 Stars)</option>
+          <option value="2">⭐⭐ (2 Stars)</option>
+          <option value="1">⭐ (1 Star)</option>
+        </select>
+        <select class="sort-select" id="sort-select">
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+          <option value="highest">Highest Rating</option>
+          <option value="lowest">Lowest Rating</option>
+          <option value="name">By Name</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="loading-spinner" id="loading-spinner">
+      <i class="fas fa-spinner fa-spin fa-2x"></i>
+      <p>Loading feedbacks...</p>
+    </div>
+
+    <div class="feedbacks-grid" id="feedbacks-grid">
+      <!-- Feedbacks will be loaded here -->
+    </div>
+
+    <div class="no-feedbacks" id="no-feedbacks" style="display: none;">
+      <i class="fas fa-comment-slash fa-3x" style="margin-bottom: 1rem; opacity: 0.5;"></i>
+      <h3>No feedbacks found</h3>
+      <p>Be the first to share your thoughts about KATIPUDROID!</p>
+      <a href="../index.html#message" class="back-button" style="margin-top: 1rem;">
+        <i class="fas fa-plus"></i>
+        Add Feedback
+      </a>
+    </div>
+
+    <div class="pagination-controls" id="pagination-controls" style="display: none;">
+      <button class="pagination-btn" id="prev-btn" onclick="changePage(-1)">
+        <i class="fas fa-chevron-left"></i> Previous
+      </button>
+      <div class="pagination-info" id="pagination-info">
+        Page 1 of 1
+      </div>
+      <button class="pagination-btn" id="next-btn" onclick="changePage(1)">
+        Next <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!--footer-->
+  <footer>
+    <div class="waves">
+      <div class="wave" id="wave1"></div>
+      <div class="wave" id="wave2"></div>
+      <div class="wave" id="wave3"></div>
+      <div class="wave" id="wave4"></div>
+    </div>
+    <ul class="social_icon">
+      <li><a href="#"><ion-icon name="logo-facebook"></ion-icon></a></li>
+      <li><a href="#"><ion-icon name="logo-twitter"></ion-icon></a></li>
+      <li><a href="#"><ion-icon name="logo-linkedin"></ion-icon></a></li>
+      <li><a href="#"><ion-icon name="logo-instagram"></ion-icon></a></li>
+    </ul>
+    
+    <ul class="menu">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../index.html#about">About</a></li>
+      <li><a href="../index.html#developers">Team</a></li>
+      <li><a href="../index.html#message">Message us</a></li>
+    </ul>
+    <p>&copy; 2025 KATIPUDROID | All Rights Reserved</p>
+  </footer>
+
+  <!--script-->
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <script src="feedbacks.js"></script>
+
+</body>
+</html>

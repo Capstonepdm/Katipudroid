@@ -1,0 +1,100 @@
+-- No login/authentication - Just feedback system with ratings
+-- Run this in your MySQL localhost (phpMyAdmin)
+
+-- Create the database
+CREATE DATABASE IF NOT EXISTS katipudroid_db;
+USE katipudroid_db;
+
+-- Drop existing tables if they exist (clean start)
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS feedbacks;
+
+-- Create feedbacks table (main table for the system)
+CREATE TABLE feedbacks (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    message TEXT NOT NULL,
+    rating INT NOT NULL DEFAULT 5 CHECK (rating >= 1 AND rating <= 5),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    status ENUM('new', 'read', 'replied', 'featured') DEFAULT 'new',
+    ip_address VARCHAR(45) DEFAULT NULL,
+    user_agent TEXT DEFAULT NULL
+);
+
+-- Create indexes for better performance
+CREATE INDEX idx_feedback_rating ON feedbacks(rating);
+CREATE INDEX idx_feedback_status ON feedbacks(status);
+CREATE INDEX idx_feedback_created ON feedbacks(created_at);
+CREATE INDEX idx_feedback_email ON feedbacks(email);
+
+-- Create a view for public feedback display (without sensitive data)
+CREATE VIEW public_feedbacks AS
+SELECT 
+    id,
+    name,
+    message,
+    rating,
+    created_at,
+    status
+FROM feedbacks 
+WHERE status != 'deleted'
+ORDER BY created_at DESC;
+
+-- Insert sample data with ratings
+INSERT INTO feedbacks (name, email, message, rating) VALUES 
+('Alice Johnson', 'alice@example.com', 'Amazing game! I love the graphics and gameplay. The historical accuracy is impressive!', 5),
+('Bob Smith', 'bob@example.com', 'Feels so immersive, can\'t wait for updates! Great work on the character development.', 4),
+('Maria Santos', 'maria.santos@gmail.com', 'Napakaganda ng game! Natutunan ko pa ang kasaysayan ng Pilipinas. Salamat sa developers!', 5),
+('Juan dela Cruz', 'juan.delacruz@yahoo.com', 'Great concept! Sana may mobile version din. Overall maganda yung storyline.', 4),
+('Carlos Mendoza', 'carlos@email.com', 'Outstanding graphics and historical detail! Really brings the Katipunan era to life.', 5),
+('Lisa Garcia', 'lisa@gmail.com', 'Good game but the controls could be improved. Still enjoyable though!', 3),
+('Jose Rizal Jr', 'jose.rizal@email.com', 'Perfect blend of education and entertainment. My kids love learning history this way!', 5),
+('Ana Reyes', 'ana@yahoo.com', 'Nice concept and great execution. Looking forward to more historical games!', 4),
+('Miguel Torres', 'miguel@email.com', 'Impressive work! The attention to historical detail is remarkable. Highly recommended!', 5),
+('Sofia Cruz', 'sofia@gmail.com', 'Fun to play but could use more character customization options. Still a solid game.', 3);
+
+-- Create a summary view for statistics
+CREATE VIEW feedback_stats AS
+SELECT 
+    COUNT(*) as total_feedbacks,
+    AVG(rating) as average_rating,
+    COUNT(CASE WHEN rating = 5 THEN 1 END) as five_star_count,
+    COUNT(CASE WHEN rating = 4 THEN 1 END) as four_star_count,
+    COUNT(CASE WHEN rating = 3 THEN 1 END) as three_star_count,
+    COUNT(CASE WHEN rating = 2 THEN 1 END) as two_star_count,
+    COUNT(CASE WHEN rating = 1 THEN 1 END) as one_star_count,
+    MAX(created_at) as latest_feedback,
+    MIN(created_at) as first_feedback
+FROM feedbacks 
+WHERE status != 'deleted';
+
+-- Show the created tables
+SHOW TABLES;
+
+-- Display table structure
+DESCRIBE feedbacks;
+
+-- Display sample data with ratings
+SELECT 
+    id,
+    name,
+    LEFT(message, 50) as message_preview,
+    rating,
+    created_at,
+    status
+FROM feedbacks 
+ORDER BY created_at DESC;
+
+-- Display feedback statistics
+SELECT * FROM feedback_stats;
+
+-- Display rating distribution
+SELECT 
+    rating,
+    COUNT(*) as count,
+    ROUND((COUNT(*) * 100.0 / (SELECT COUNT(*) FROM feedbacks)), 1) as percentage
+FROM feedbacks 
+GROUP BY rating 
+ORDER BY rating DESC;

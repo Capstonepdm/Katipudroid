@@ -1,0 +1,566 @@
+/* feedback.css - All feedback and rating related styles */
+
+/* ================================
+   STAR RATING STYLES
+   ================================ */
+
+/* Star Rating Input */
+.star-rating {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.star-rating label {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.stars {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.star {
+  font-size: 2.2rem;
+  color: #444;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0.3rem;
+  border-radius: 6px;
+  position: relative;
+}
+
+.star:hover,
+.star.active {
+  color: #ff4655;
+  transform: scale(1.15);
+  text-shadow: 0 0 15px rgba(255, 70, 85, 0.6);
+}
+
+.star:hover ~ .star {
+  color: #444;
+  transform: scale(1);
+}
+
+.rating-display {
+  text-align: center;
+  padding: 0.6rem 1.2rem;
+  background: linear-gradient(45deg, rgba(255, 70, 85, 0.2), rgba(255, 107, 122, 0.2));
+  border: 1px solid rgba(255, 70, 85, 0.4);
+  border-radius: 20px;
+  color: #ff4655;
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(255, 70, 85, 0.2);
+  transition: all 0.3s ease;
+}
+
+/* Hover effects for star rating section */
+.star-rating:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 70, 85, 0.3);
+}
+
+/* Animation for rating display */
+.rating-display.animate {
+  animation: ratingPulse 0.4s ease;
+}
+
+@keyframes ratingPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* ================================
+   FEEDBACK CARD STYLES
+   ================================ */
+
+/* Basic feedback card */
+.feedback-card {
+  background: #1a1a1a;
+  padding: 1rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.feedback-card:hover:not(.show-more-card) {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Enhanced feedback cards for feedbacks page */
+.feedback-card-enhanced {
+  background: linear-gradient(145deg, #1a1a1a 0%, #2a2a2a 100%);
+  padding: 1.5rem;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.feedback-card-enhanced::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #ff4655, #ff6b7a);
+}
+
+.feedback-card-enhanced:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(255, 70, 85, 0.2);
+  border-color: rgba(255, 70, 85, 0.3);
+}
+
+/* Show More Card */
+.show-more-card {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%) !important;
+  border: 2px dashed rgba(255, 70, 85, 0.3) !important;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.show-more-card:hover {
+  border-color: rgba(255, 70, 85, 0.6) !important;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(255, 70, 85, 0.2);
+}
+
+.show-more-card .fas {
+  transition: transform 0.3s ease;
+}
+
+.show-more-card:hover .fas {
+  transform: scale(1.1);
+}
+
+/* ================================
+   FEEDBACK RATING DISPLAY
+   ================================ */
+
+/* Star display in feedback cards */
+.feedback-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.8rem 0;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.feedback-stars {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.feedback-star {
+  font-size: 1.1rem;
+  color: #444;
+  transition: color 0.2s ease;
+}
+
+.feedback-star.filled {
+  color: #ff4655;
+  text-shadow: 0 0 8px rgba(255, 70, 85, 0.4);
+}
+
+.rating-text {
+  font-size: 0.95rem;
+  color: #ff4655;
+  font-weight: 600;
+  background: rgba(255, 70, 85, 0.15);
+  padding: 0.3rem 0.7rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 70, 85, 0.3);
+}
+
+/* Enhanced feedback cards with ratings */
+.feedback-card-enhanced .feedback-rating {
+  margin-bottom: 1rem;
+  padding-bottom: 0.8rem;
+}
+
+.feedback-card-enhanced .feedback-star {
+  font-size: 1.1rem;
+}
+
+.feedback-card-enhanced .rating-text {
+  font-size: 0.95rem;
+}
+
+/* ================================
+   FEEDBACKS PAGE SPECIFIC STYLES
+   ================================ */
+
+.feedbacks-hero {
+  background: linear-gradient(135deg, #0f1923 0%, #1a2332 100%);
+  padding: 4rem 2rem 2rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.feedbacks-hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(45deg, #ff4655, #ff6b7a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.feedbacks-hero p {
+  font-size: 1.1rem;
+  color: #ccc;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.feedbacks-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+.feedback-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+}
+
+.stats-info {
+  font-size: 1rem;
+  color: #ccc;
+}
+
+.filter-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.search-box, .sort-select {
+  padding: 0.6rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.search-box:focus, .sort-select:focus {
+  border-color: #ff4655;
+  background: rgba(255, 70, 85, 0.1);
+  box-shadow: 0 0 10px rgba(255, 70, 85, 0.2);
+}
+
+.search-box::placeholder {
+  color: #aaa;
+}
+
+.sort-select option {
+  background: #1a1a1a;
+  color: white;
+}
+
+.feedbacks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* ================================
+   RATING SUMMARY STYLES
+   ================================ */
+
+.rating-summary {
+  background: linear-gradient(135deg, rgba(255, 70, 85, 0.1) 0%, rgba(255, 107, 122, 0.1) 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(255, 70, 85, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.rating-summary h4 {
+  margin-bottom: 1rem;
+  color: #ff4655;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rating-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.avg-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.8rem 1.2rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.avg-stars {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.avg-star {
+  font-size: 1.4rem;
+  color: #444;
+}
+
+.avg-star.filled {
+  color: #ff4655;
+  text-shadow: 0 0 8px rgba(255, 70, 85, 0.4);
+}
+
+.rating-count {
+  font-size: 1rem;
+  color: #ccc;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ================================
+   AUTHOR INFO STYLES
+   ================================ */
+
+.feedback-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.feedback-author {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.author-avatar {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(45deg, #ff4655, #ff6b7a);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.author-info h4 {
+  margin: 0;
+  color: #ff4655;
+  font-size: 1.1rem;
+}
+
+.feedback-date {
+  font-size: 0.85rem;
+  color: #999;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.feedback-message {
+  color: #ddd;
+  line-height: 1.6;
+  margin: 1rem 0;
+}
+
+.feedback-id {
+  font-size: 0.8rem;
+  color: #666;
+  text-align: right;
+}
+
+/* ================================
+   PAGINATION STYLES
+   ================================ */
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.pagination-btn {
+  padding: 0.8rem 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #ff4655;
+  border-color: #ff4655;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+/* ================================
+   UTILITY STYLES
+   ================================ */
+
+.loading-spinner {
+  display: none;
+  text-align: center;
+  padding: 2rem;
+  color: #ff4655;
+}
+
+.no-feedbacks {
+  text-align: center;
+  padding: 3rem;
+  color: #999;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+}
+
+.back-button:hover {
+  background: #ff4655;
+  border-color: #ff4655;
+  color: white;
+  text-decoration: none;
+}
+
+/* ================================
+   RESPONSIVE DESIGN
+   ================================ */
+
+@media (max-width: 768px) {
+  .star {
+    font-size: 2rem;
+    padding: 0.2rem;
+  }
+  
+  .star-rating {
+    padding: 1.2rem;
+    margin: 1rem 0;
+  }
+  
+  .rating-display {
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  .stars {
+    gap: 0.3rem;
+  }
+  
+  .feedbacks-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .feedback-stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .filter-controls {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.8rem;
+  }
+  
+  .search-box, .sort-select {
+    width: 100%;
+  }
+  
+  .pagination-controls {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .rating-breakdown {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .avg-rating {
+    font-size: 1.1rem;
+    padding: 0.6rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .star {
+    font-size: 1.8rem;
+  }
+  
+  .stars {
+    gap: 0.2rem;
+  }
+  
+  .star-rating label {
+    font-size: 1rem;
+  }
+}
