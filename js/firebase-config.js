@@ -192,18 +192,35 @@ window.sendOTPEmail = async function(email, name, otp) {
       throw new Error('EmailJS not loaded');
     }
     
+    // EmailJS template parameters - these must match your template variables
     const templateParams = {
-      user_name: name,
-      user_email: email,
-      otp_code: otp
+      to_email: email,        // This is the recipient email
+      to_name: name,          // This is the recipient name
+      user_name: name,        // Alternative name field
+      user_email: email,      // Alternative email field
+      otp_code: otp,          // The OTP code
+      reply_to: email         // Reply-to address
     };
     
-    // Replace these with your actual EmailJS credentials
-    const SERVICE_ID = 'service_802oicm';
-    const TEMPLATE_ID = 'template_qe8a1wo';
-    const PUBLIC_KEY = 'ym7yxfFUGxy4FAGDw';
+    console.log('📧 Sending email with params:', {
+      to_email: email,
+      to_name: name,
+      otp_code: otp
+    });
+    
+    // Your actual EmailJS credentials
+    const SERVICE_ID = 'service_802oicm';      // Your actual service ID
+    const TEMPLATE_ID = 'template_qe8a1wo';    // Your actual template ID
+    const PUBLIC_KEY = 'ym7yxfFUGxy4FAGDw';   // Your actual public key
+    
+    // Check if credentials are still placeholder values
+    if (SERVICE_ID === 'YOUR_SERVICE_ID' || TEMPLATE_ID === 'YOUR_TEMPLATE_ID' || PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
+      throw new Error('Please update EmailJS credentials in firebase-config.js');
+    }
     
     const response = await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY);
+    
+    console.log('✅ EmailJS response:', response);
     
     return {
       success: true,
@@ -213,7 +230,7 @@ window.sendOTPEmail = async function(email, name, otp) {
     console.error('Error sending OTP email:', error);
     return {
       success: false,
-      message: 'Failed to send OTP email: ' + error.message
+      message: 'Failed to send OTP email: ' + (error.text || error.message || 'Unknown error')
     };
   }
 };
