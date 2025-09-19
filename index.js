@@ -9,6 +9,7 @@ let otpTimer = null;
 let otpTimeLeft = 600; // 10 minutes in seconds
 
 // Owl Carousel initialization
+// Owl Carousel initialization - Fixed duplicated dots
 $(document).ready(function () {
   console.log('📱 DOM loaded, initializing...');
   
@@ -19,19 +20,35 @@ $(document).ready(function () {
     margin: 10,
     nav: false,  // Disable default navigation (we'll use custom arrows)
     dots: true,  // Enable dots navigation
+    dotsContainer: false, // Let Owl Carousel manage dots automatically
     mouseDrag: true,
     touchDrag: true,
     smartSpeed: 600,
     autoplay: false, // Disable autoplay initially
     responsive: {
       0: {
-        items: 1
+        items: 1,
+        dots: true  // Ensure dots are enabled on mobile
       },
       600: {
-        items: 2
+        items: 2,
+        dots: true
       },
       1000: {
-        items: 3
+        items: 3,
+        dots: true
+      }
+    },
+    // Callback to ensure dots are properly initialized
+    onInitialized: function(event) {
+      // Remove any duplicate dots that might exist
+      $('.owl-dots').not('.owl-carousel .owl-dots').remove();
+      console.log('Owl Carousel initialized with dots');
+    },
+    onChanged: function(event) {
+      // Ensure only one set of dots exists after changes
+      if ($('.owl-dots').length > 1) {
+        $('.owl-dots').not('.owl-carousel .owl-dots').remove();
       }
     }
   });
@@ -89,6 +106,15 @@ $(document).ready(function () {
       // startAutoplay(); // Uncomment to resume autoplay after hover
     }
   );
+
+  // Additional fix: Remove duplicate dots after carousel is fully loaded
+  setTimeout(function() {
+    const dotContainers = $('.owl-dots');
+    if (dotContainers.length > 1) {
+      console.log('Removing duplicate dots...');
+      dotContainers.not(':first').remove();
+    }
+  }, 1000);
 
   // Continue with your existing app initialization...
   initializeApp();

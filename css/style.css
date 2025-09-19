@@ -686,18 +686,23 @@ animation: animateWave_02 3s linear infinite;
   right: -60px;
 }
 
-/* Hide default Owl Carousel navigation */
 .owl-nav {
   display: none !important;
 }
 
-/* Enhanced dots styling */
-.owl-dots {
+/* SINGLE, CLEAN SET OF DOT RULES - Remove all duplicates */
+.owl-carousel .owl-dots {
   text-align: center;
   margin-top: 30px;
+  display: block !important;
 }
 
-.owl-dot {
+/* Hide any duplicate dots that might appear outside the carousel */
+.owl-dots:not(.owl-carousel .owl-dots) {
+  display: none !important;
+}
+
+.owl-carousel .owl-dots .owl-dot {
   display: inline-block !important;
   margin: 0 5px;
   width: 12px;
@@ -707,54 +712,21 @@ animation: animateWave_02 3s linear infinite;
   cursor: pointer;
   transition: all 0.3s ease;
   border: none;
+  outline: none;
 }
 
-.owl-dot.active {
+.owl-carousel .owl-dots .owl-dot.active {
   background: #ff4655 !important;
   transform: scale(1.2);
 }
 
-.owl-dot:hover {
+.owl-carousel .owl-dots .owl-dot:hover {
   background: rgba(255, 70, 85, 0.7) !important;
 }
 
-/* Responsive navigation arrows */
+/* Ensure dots appear on mobile */
 @media (max-width: 768px) {
-  .carousel-container {
-    margin: 0 40px;
-  }
-
-  .custom-nav {
-    width: 40px;
-    height: 40px;
-    font-size: 16px;
-  }
-
-  .nav-prev {
-    left: -45px;
-  }
-
-  .nav-next {
-    right: -45px;
-  }
-}
-
-@media (max-width: 480px) {
-  .carousel-container {
-    margin: 0 30px;
-  }
-
-  .custom-nav {
-    width: 35px;
-    height: 35px;
-    font-size: 14px;
-  }
-
-  .nav-prev {
-    left: -35px;
-  }
-
-  .nav-next {
-    right: -35px;
+  .owl-carousel .owl-dots {
+    display: block !important;
   }
 }
