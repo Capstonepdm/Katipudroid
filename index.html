@@ -12,6 +12,106 @@
   <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/feedback.css">
+  <style>
+    .otp-section {
+      display: none;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+    
+    .otp-section.show {
+      display: block;
+      animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .otp-input {
+      text-align: center;
+      font-size: 1.5rem;
+      letter-spacing: 0.5rem;
+      font-weight: bold;
+      padding: 1rem;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 70, 85, 0.3);
+      border-radius: 8px;
+      color: white;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+    
+    .otp-input:focus {
+      border-color: #ff4655;
+      box-shadow: 0 0 15px rgba(255, 70, 85, 0.3);
+    }
+    
+    .otp-timer {
+      text-align: center;
+      color: #ff4655;
+      font-weight: bold;
+      margin: 0.5rem 0;
+    }
+    
+    .resend-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 70, 85, 0.5);
+      color: #ff4655;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+    
+    .resend-btn:hover:not(:disabled) {
+      background: rgba(255, 70, 85, 0.1);
+      border-color: #ff4655;
+    }
+    
+    .resend-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      gap: 1rem;
+    }
+    
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .step.active {
+      background: rgba(255, 70, 85, 0.2);
+      border-color: #ff4655;
+      color: #ff4655;
+    }
+    
+    .step.completed {
+      background: rgba(0, 255, 0, 0.2);
+      border-color: #00ff00;
+      color: #00ff00;
+    }
+  </style>
 </head>
 <body>
 
@@ -96,6 +196,23 @@ She provided food, shelter, and medical care to revolutionaries, earning deep re
 <!--message-->
   <section id="message">
     <h2>Message Us</h2>
+    
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+      <div class="step active" id="step1">
+        <i class="fas fa-edit"></i>
+        <span>1. Fill Form</span>
+      </div>
+      <div class="step" id="step2">
+        <i class="fas fa-envelope"></i>
+        <span>2. Verify Email</span>
+      </div>
+      <div class="step" id="step3">
+        <i class="fas fa-check"></i>
+        <span>3. Submit</span>
+      </div>
+    </div>
+    
     <form id="feedback-form">
       <input type="text" id="name" placeholder="Your Name" required>
       <input type="email" id="email" placeholder="Your Email" required>
@@ -114,7 +231,24 @@ She provided food, shelter, and medical care to revolutionaries, earning deep re
       </div>
       <input type="hidden" id="rating" value="5">
       
-      <button type="submit">Send Feedback</button>
+      <!-- OTP Section (initially hidden) -->
+      <div class="otp-section" id="otp-section">
+        <h4 style="color: #ff4655; margin-bottom: 1rem; text-align: center;">
+          <i class="fas fa-shield-alt"></i> Email Verification
+        </h4>
+        <p style="text-align: center; color: #ccc; margin-bottom: 1rem;">
+          We've sent a 6-digit verification code to your email. Please enter it below:
+        </p>
+        <input type="text" id="otp-input" class="otp-input" placeholder="000000" maxlength="6" pattern="[0-9]{6}">
+        <div class="otp-timer" id="otp-timer">Code expires in: 10:00</div>
+        <div style="text-align: center; margin-top: 1rem;">
+          <button type="button" class="resend-btn" id="resend-btn" disabled>
+            <i class="fas fa-redo"></i> Resend Code
+          </button>
+        </div>
+      </div>
+      
+      <button type="submit" id="submit-btn">Send OTP & Verify</button>
     </form>
   </section>
 
@@ -146,6 +280,14 @@ She provided food, shelter, and medical care to revolutionaries, earning deep re
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
+<!-- EmailJS for sending OTP emails -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+  // Initialize EmailJS with your public key
+  // Replace 'YOUR_PUBLIC_KEY' with your actual EmailJS public key
+  emailjs.init('ym7yxfFUGxy4FAGDw');
+</script>
 
 <!-- Firebase Configuration - MUST be loaded first -->
 <script src="js/firebase-config.js" type="module"></script>

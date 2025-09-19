@@ -1,4 +1,4 @@
-// js/firebase-config.js - Firebase configuration and setup
+// js/firebase-config.js - Updated with OTP support
 
 // Import Firebase modules
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
@@ -11,11 +11,14 @@ import {
   orderBy, 
   limit,
   onSnapshot,
-  serverTimestamp 
+  serverTimestamp,
+  where,
+  deleteDoc,
+  doc,
+  getDoc
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 // Your Firebase configuration
-// Replace with your actual Firebase config from Firebase Console
 const firebaseConfig = {
   apiKey: "AIzaSyAmIbRpVMx77Sr8rDHW2cegaiWt0FinvyM",
   authDomain: "katipudroid-40690.firebaseapp.com",
@@ -25,11 +28,8 @@ const firebaseConfig = {
   appId: "1:517246659517:web:517014582e93227ac8c0d4"
 };
 
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
-// Initialize Firestore
 const db = getFirestore(app);
 
 // Export for use in other files
@@ -43,12 +43,120 @@ window.firebaseModules = {
   orderBy,
   limit,
   onSnapshot,
-  serverTimestamp
+  serverTimestamp,
+  where,
+  deleteDoc,
+  doc,
+  getDoc
 };
 
 console.log('Firebase initialized successfully');
 
-// Helper function to submit feedback
+// Generate 6-digit OTP
+function generateOTP() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// Store OTP in Firebase with expiration
+window.storeOTP = async function(email, otp) {
+  try {
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 10); // Expires in 10 minutes
+    
+    const docRef = await addDoc(collection(db, 'otps'), {
+      email: email.toLowerCase().trim(),
+      otp: otp,
+      createdAt: serverTimestamp(),
+      expiresAt: expiresAt,
+      verified: false
+    });
+    
+    return {
+      success: true,
+      id: docRef.id
+    };
+  } catch (error) {
+    console.error('Error storing OTP:', error);
+    return {
+      success: false,
+      message: 'Error storing OTP: ' + error.message
+    };
+  }
+};
+
+// Verify OTP
+window.verifyOTP = async function(email, otp) {
+  try {
+    const q = query(
+      collection(db, 'otps'), 
+      where('email', '==', email.toLowerCase().trim()),
+      where('otp', '==', otp),
+      where('verified', '==', false)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    
+    if (querySnapshot.empty) {
+      return {
+        success: false,
+        message: 'Invalid OTP code'
+      };
+    }
+    
+    // Check if OTP is expired
+    const otpDoc = querySnapshot.docs[0];
+    const otpData = otpDoc.data();
+    const now = new Date();
+    const expiresAt = otpData.expiresAt.toDate();
+    
+    if (now > expiresAt) {
+      // Delete expired OTP
+      await deleteDoc(doc(db, 'otps', otpDoc.id));
+      return {
+        success: false,
+        message: 'OTP has expired. Please request a new one.'
+      };
+    }
+    
+    // Mark OTP as verified
+    await deleteDoc(doc(db, 'otps', otpDoc.id));
+    
+    return {
+      success: true,
+      message: 'OTP verified successfully'
+    };
+  } catch (error) {
+    console.error('Error verifying OTP:', error);
+    return {
+      success: false,
+      message: 'Error verifying OTP: ' + error.message
+    };
+  }
+};
+
+// Clean up expired OTPs (call this periodically)
+window.cleanupExpiredOTPs = async function() {
+  try {
+    const q = query(collection(db, 'otps'));
+    const querySnapshot = await getDocs(q);
+    const now = new Date();
+    
+    const deletePromises = [];
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      if (data.expiresAt && data.expiresAt.toDate() < now) {
+        deletePromises.push(deleteDoc(doc.ref));
+      }
+    });
+    
+    await Promise.all(deletePromises);
+    console.log(`Cleaned up ${deletePromises.length} expired OTPs`);
+  } catch (error) {
+    console.error('Error cleaning up OTPs:', error);
+  }
+};
+
+// Helper function to submit feedback (unchanged)
 window.submitFeedback = async function(feedbackData) {
   try {
     const docRef = await addDoc(collection(db, 'feedbacks'), {
@@ -58,7 +166,7 @@ window.submitFeedback = async function(feedbackData) {
       rating: parseInt(feedbackData.rating),
       createdAt: serverTimestamp(),
       status: 'new',
-      ipAddress: null, // Can't get IP on client-side
+      ipAddress: null,
       userAgent: navigator.userAgent
     });
     
@@ -76,7 +184,65 @@ window.submitFeedback = async function(feedbackData) {
   }
 };
 
-// Helper function to get all feedbacks
+// Send OTP Email using EmailJS
+window.sendOTPEmail = async function(email, name, otp) {
+  try {
+    // Make sure EmailJS is loaded
+    if (typeof emailjs === 'undefined') {
+      throw new Error('EmailJS not loaded');
+    }
+    
+    const templateParams = {
+      user_name: name,
+      user_email: email,
+      otp_code: otp
+    };
+    
+    // Replace these with your actual EmailJS credentials
+    const SERVICE_ID = 'service_802oicm';
+    const TEMPLATE_ID = 'template_qe8a1wo';
+    const PUBLIC_KEY = 'ym7yxfFUGxy4FAGDw';
+    
+    const response = await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY);
+    
+    return {
+      success: true,
+      message: 'OTP sent successfully'
+    };
+  } catch (error) {
+    console.error('Error sending OTP email:', error);
+    return {
+      success: false,
+      message: 'Failed to send OTP email: ' + error.message
+    };
+  }
+};
+
+// Generate and send OTP
+window.generateAndSendOTP = async function(email, name) {
+  try {
+    const otp = generateOTP();
+    
+    // Store OTP in Firebase
+    const storeResult = await window.storeOTP(email, otp);
+    if (!storeResult.success) {
+      return storeResult;
+    }
+    
+    // Send OTP via email
+    const emailResult = await window.sendOTPEmail(email, name, otp);
+    
+    return emailResult;
+  } catch (error) {
+    console.error('Error generating and sending OTP:', error);
+    return {
+      success: false,
+      message: 'Error: ' + error.message
+    };
+  }
+};
+
+// Other existing functions remain the same...
 window.getAllFeedbacks = async function() {
   try {
     const q = query(
@@ -116,7 +282,6 @@ window.getAllFeedbacks = async function() {
   }
 };
 
-// Helper function to get recent feedbacks (for home page)
 window.getRecentFeedbacks = async function(limitCount = 10) {
   try {
     const q = query(
@@ -153,7 +318,6 @@ window.getRecentFeedbacks = async function(limitCount = 10) {
   }
 };
 
-// Real-time listener for feedbacks
 window.listenToFeedbacks = function(callback) {
   const q = query(
     collection(db, 'feedbacks'), 
@@ -191,7 +355,6 @@ window.listenToFeedbacks = function(callback) {
   });
 };
 
-// Utility function to format dates
 function formatDate(date) {
   if (!date) return 'Unknown date';
   
@@ -203,3 +366,8 @@ function formatDate(date) {
     minute: '2-digit'
   });
 }
+
+// Clean up expired OTPs every 5 minutes
+setInterval(() => {
+  window.cleanupExpiredOTPs();
+}, 5 * 60 * 1000);

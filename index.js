@@ -1,8 +1,12 @@
-// index.js - Complete Firebase version for KATIPUDROID
+// index.js - Updated with OTP verification
 
 // Global variables
 let firebaseReady = false;
 let feedbackFormSubmitting = false;
+let otpSent = false;
+let currentFormData = null;
+let otpTimer = null;
+let otpTimeLeft = 600; // 10 minutes in seconds
 
 // Owl Carousel initialization
 $(document).ready(function () {
@@ -28,11 +32,14 @@ async function initializeApp() {
   console.log('🚀 Initializing KATIPUDROID app...');
   
   try {
-    // Initialize star rating first (doesn't need Firebase)
+    // Initialize star rating first
     initializeStarRating();
     
     // Initialize mobile menu
     initializeMobileMenu();
+    
+    // Initialize OTP functionality
+    initializeOTPSystem();
     
     // Wait for Firebase and then load feedbacks
     await waitForFirebaseAndLoad();
@@ -86,6 +93,50 @@ async function waitForFirebaseAndLoad() {
   }
 }
 
+// Initialize OTP system
+function initializeOTPSystem() {
+  console.log('🔐 Initializing OTP system...');
+  
+  const otpInput = document.getElementById('otp-input');
+  const resendBtn = document.getElementById('resend-btn');
+  
+  if (otpInput) {
+    // Only allow numbers in OTP input
+    otpInput.addEventListener('input', function(e) {
+      e.target.value = e.target.value.replace(/[^0-9]/g, '');
+      
+      // Auto-verify when 6 digits are entered
+      if (e.target.value.length === 6) {
+        verifyOTPAndSubmit();
+      }
+    });
+  }
+  
+  if (resendBtn) {
+    resendBtn.addEventListener('click', resendOTP);
+  }
+  
+  console.log('✅ OTP system initialized');
+}
+
+// Update step indicator
+function updateStepIndicator(step) {
+  const steps = ['step1', 'step2', 'step3'];
+  
+  steps.forEach((stepId, index) => {
+    const stepElement = document.getElementById(stepId);
+    if (!stepElement) return;
+    
+    stepElement.classList.remove('active', 'completed');
+    
+    if (index + 1 < step) {
+      stepElement.classList.add('completed');
+    } else if (index + 1 === step) {
+      stepElement.classList.add('active');
+    }
+  });
+}
+
 // Show Firebase error message
 function showFirebaseError() {
   const feedbackList = document.getElementById('feedback-list');
@@ -96,13 +147,6 @@ function showFirebaseError() {
           <i class="fas fa-exclamation-triangle"></i> Database Connection Issue
         </h4>
         <p style="margin-bottom: 1rem;">Unable to connect to Firebase database.</p>
-        <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; margin: 1rem 0; font-size: 0.9em; text-align: left;">
-          <strong>To fix this:</strong><br>
-          1. Create a Firebase project<br>
-          2. Enable Firestore Database<br>
-          3. Update <code>js/firebase-config.js</code> with your credentials<br>
-          4. Make sure the file loads before index.js
-        </div>
         <button onclick="location.reload()" class="download-btn" style="margin-top: 1rem;">
           <i class="fas fa-refresh"></i> Retry Connection
         </button>
@@ -184,7 +228,7 @@ function updateStarDisplay(rating) {
   });
 }
 
-// Load recent feedbacks using Firebase (limit to 3 for home page)
+// Load recent feedbacks using Firebase
 async function loadFeedbacks() {
   console.log('📝 Loading feedbacks...');
   
@@ -353,7 +397,7 @@ function initializeFeedbackForm() {
   console.log('✅ Feedback form initialized');
 }
 
-// Handle feedback form submission
+// Handle feedback form submission (Step 1: Send OTP)
 async function handleFeedbackSubmit(e) {
   e.preventDefault();
   
@@ -362,12 +406,8 @@ async function handleFeedbackSubmit(e) {
     return;
   }
   
-  console.log('📤 Submitting feedback...');
-  feedbackFormSubmitting = true;
-  
   const form = e.target;
   const submitBtn = form.querySelector('button[type="submit"]');
-  const originalText = submitBtn.textContent;
   
   try {
     // Get form data
@@ -375,8 +415,6 @@ async function handleFeedbackSubmit(e) {
     const email = document.getElementById('email').value.trim();
     const message = document.getElementById('messageText').value.trim();
     const rating = document.getElementById('rating').value;
-    
-    console.log('📋 Form data:', { name, email, messageLength: message.length, rating });
     
     // Basic validation
     if (!name || !email || !message || !rating) {
@@ -391,76 +429,296 @@ async function handleFeedbackSubmit(e) {
       return;
     }
     
-    // Rating validation
-    const ratingNum = parseInt(rating);
-    if (ratingNum < 1 || ratingNum > 5) {
-      alert('Rating must be between 1 and 5');
+    // Check if OTP already sent and we're in verification mode
+    if (otpSent) {
+      await verifyOTPAndSubmit();
       return;
     }
     
+    // Store form data for later submission
+    currentFormData = { name, email, message, rating: parseInt(rating) };
+    
+    console.log('📤 Sending OTP to:', email);
+    feedbackFormSubmitting = true;
+    
+    // Show loading state
+    const originalText = submitBtn.textContent;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending OTP...';
+    submitBtn.disabled = true;
+    
     // Check Firebase availability
-    if (!firebaseReady || !window.submitFeedback) {
+    if (!firebaseReady || !window.generateAndSendOTP) {
       alert('Database connection not ready. Please wait a moment and try again.');
       return;
     }
     
-    // Show loading state
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-    submitBtn.disabled = true;
+    // Send OTP
+    const result = await window.generateAndSendOTP(email, name);
     
-    console.log('🔄 Calling Firebase submitFeedback...');
-    
-    const data = await window.submitFeedback({
-      name: name,
-      email: email,
-      message: message,
-      rating: ratingNum
-    });
-    
-    console.log('📤 Submit result:', data);
-    
-    if (data.success) {
+    if (result.success) {
+      console.log('✅ OTP sent successfully');
+      
+      // Show OTP section
+      showOTPSection();
+      
+      // Update step indicator
+      updateStepIndicator(2);
+      
+      // Update button
+      submitBtn.textContent = 'Verify & Submit Feedback';
+      submitBtn.disabled = false;
+      otpSent = true;
+      
+      // Start timer
+      startOTPTimer();
+      
       // Show success message
-      console.log('✅ Feedback submitted successfully!');
-      
-      // Custom success alert with better styling
-      showSuccessMessage('Thank you for your feedback!', 
-        `Your ${ratingNum}-star review has been submitted successfully. We appreciate your input!`);
-      
-      // Reset form and stars
-      form.reset();
-      document.getElementById('rating').value = 5;
-      updateStarDisplay(5);
-      const ratingText = document.getElementById('rating-text');
-      if (ratingText) {
-        ratingText.textContent = '5 Stars - Excellent';
-      }
-      
-      // Reload feedbacks to show the new one (with delay to allow Firebase sync)
-      console.log('🔄 Reloading feedbacks after submission...');
-      setTimeout(() => {
-        loadFeedbacks();
-      }, 1500);
+      showSuccessMessage('OTP Sent!', 
+        `A 6-digit verification code has been sent to ${email}. Please check your email and enter the code below.`);
       
     } else {
-      console.error('❌ Feedback submission failed:', data.message);
-      alert('Error submitting feedback: ' + data.message);
+      console.error('❌ Failed to send OTP:', result.message);
+      alert('Failed to send OTP: ' + result.message);
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
     }
     
   } catch (error) {
-    console.error('❌ Error submitting feedback:', error);
-    alert('Error submitting feedback. Please check your internet connection and try again.');
+    console.error('❌ Error sending OTP:', error);
+    alert('Error sending OTP. Please check your internet connection and try again.');
+    submitBtn.textContent = 'Send OTP & Verify';
+    submitBtn.disabled = false;
   } finally {
-    // Reset button state
-    submitBtn.textContent = originalText;
+    feedbackFormSubmitting = false;
+  }
+}
+
+// Show OTP verification section
+function showOTPSection() {
+  const otpSection = document.getElementById('otp-section');
+  if (otpSection) {
+    otpSection.classList.add('show');
+    
+    // Focus on OTP input
+    setTimeout(() => {
+      const otpInput = document.getElementById('otp-input');
+      if (otpInput) {
+        otpInput.focus();
+      }
+    }, 300);
+  }
+}
+
+// Start OTP timer
+function startOTPTimer() {
+  otpTimeLeft = 600; // 10 minutes
+  const timerElement = document.getElementById('otp-timer');
+  const resendBtn = document.getElementById('resend-btn');
+  
+  if (resendBtn) {
+    resendBtn.disabled = true;
+  }
+  
+  otpTimer = setInterval(() => {
+    otpTimeLeft--;
+    
+    const minutes = Math.floor(otpTimeLeft / 60);
+    const seconds = otpTimeLeft % 60;
+    
+    if (timerElement) {
+      timerElement.textContent = `Code expires in: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+    
+    if (otpTimeLeft <= 0) {
+      clearInterval(otpTimer);
+      if (timerElement) {
+        timerElement.textContent = 'Code expired! Please request a new one.';
+        timerElement.style.color = '#ff4655';
+      }
+      if (resendBtn) {
+        resendBtn.disabled = false;
+        resendBtn.textContent = 'Send New Code';
+      }
+    } else if (otpTimeLeft <= 60) {
+      // Enable resend button in last minute
+      if (resendBtn) {
+        resendBtn.disabled = false;
+        resendBtn.innerHTML = '<i class="fas fa-redo"></i> Resend Code';
+      }
+    }
+  }, 1000);
+}
+
+// Resend OTP
+async function resendOTP() {
+  if (!currentFormData) {
+    alert('Please fill the form first');
+    return;
+  }
+  
+  const resendBtn = document.getElementById('resend-btn');
+  const originalText = resendBtn.textContent;
+  
+  try {
+    resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    resendBtn.disabled = true;
+    
+    const result = await window.generateAndSendOTP(currentFormData.email, currentFormData.name);
+    
+    if (result.success) {
+      console.log('✅ OTP resent successfully');
+      
+      // Restart timer
+      clearInterval(otpTimer);
+      startOTPTimer();
+      
+      // Clear previous OTP input
+      const otpInput = document.getElementById('otp-input');
+      if (otpInput) {
+        otpInput.value = '';
+        otpInput.focus();
+      }
+      
+      showSuccessMessage('New OTP Sent!', 
+        `A new verification code has been sent to ${currentFormData.email}.`);
+      
+    } else {
+      console.error('❌ Failed to resend OTP:', result.message);
+      alert('Failed to resend OTP: ' + result.message);
+    }
+    
+  } catch (error) {
+    console.error('❌ Error resending OTP:', error);
+    alert('Error resending OTP. Please try again.');
+  } finally {
+    resendBtn.textContent = originalText;
+    resendBtn.disabled = false;
+  }
+}
+
+// Verify OTP and submit feedback
+async function verifyOTPAndSubmit() {
+  const otpInput = document.getElementById('otp-input');
+  const submitBtn = document.getElementById('submit-btn');
+  
+  if (!otpInput || !currentFormData) {
+    alert('Please fill the form and request OTP first');
+    return;
+  }
+  
+  const otp = otpInput.value.trim();
+  
+  if (otp.length !== 6) {
+    alert('Please enter a valid 6-digit OTP');
+    otpInput.focus();
+    return;
+  }
+  
+  try {
+    feedbackFormSubmitting = true;
+    const originalText = submitBtn.textContent;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+    submitBtn.disabled = true;
+    
+    console.log('🔐 Verifying OTP...');
+    
+    // Verify OTP
+    const verifyResult = await window.verifyOTP(currentFormData.email, otp);
+    
+    if (verifyResult.success) {
+      console.log('✅ OTP verified successfully');
+      
+      // Update step indicator
+      updateStepIndicator(3);
+      
+      // Submit feedback
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+      
+      console.log('📤 Submitting feedback...');
+      const submitResult = await window.submitFeedback(currentFormData);
+      
+      if (submitResult.success) {
+        console.log('✅ Feedback submitted successfully!');
+        
+        // Clear timer
+        clearInterval(otpTimer);
+        
+        // Show success message
+        showSuccessMessage('Feedback Submitted Successfully!', 
+          `Thank you ${currentFormData.name}! Your ${currentFormData.rating}-star review has been submitted and will appear on our website shortly.`);
+        
+        // Reset form
+        resetForm();
+        
+        // Reload feedbacks
+        setTimeout(() => {
+          loadFeedbacks();
+        }, 2000);
+        
+      } else {
+        console.error('❌ Failed to submit feedback:', submitResult.message);
+        alert('Failed to submit feedback: ' + submitResult.message);
+      }
+      
+    } else {
+      console.error('❌ OTP verification failed:', verifyResult.message);
+      alert(verifyResult.message);
+      otpInput.value = '';
+      otpInput.focus();
+    }
+    
+  } catch (error) {
+    console.error('❌ Error verifying OTP:', error);
+    alert('Error verifying OTP. Please try again.');
+  } finally {
+    submitBtn.textContent = 'Verify & Submit Feedback';
     submitBtn.disabled = false;
     feedbackFormSubmitting = false;
   }
 }
 
+// Reset form to initial state
+function resetForm() {
+  // Reset form fields
+  const form = document.getElementById('feedback-form');
+  if (form) {
+    form.reset();
+  }
+  
+  // Reset rating
+  document.getElementById('rating').value = 5;
+  updateStarDisplay(5);
+  const ratingText = document.getElementById('rating-text');
+  if (ratingText) {
+    ratingText.textContent = '5 Stars - Excellent';
+  }
+  
+  // Hide OTP section
+  const otpSection = document.getElementById('otp-section');
+  if (otpSection) {
+    otpSection.classList.remove('show');
+  }
+  
+  // Reset button
+  const submitBtn = document.getElementById('submit-btn');
+  if (submitBtn) {
+    submitBtn.textContent = 'Send OTP & Verify';
+  }
+  
+  // Clear timer
+  clearInterval(otpTimer);
+  
+  // Reset step indicator
+  updateStepIndicator(1);
+  
+  // Reset variables
+  otpSent = false;
+  currentFormData = null;
+  feedbackFormSubmitting = false;
+}
+
 // Show custom success message
 function showSuccessMessage(title, message) {
-  // Create custom modal/alert
   const modal = document.createElement('div');
   modal.style.cssText = `
     position: fixed;
@@ -499,12 +757,12 @@ function showSuccessMessage(title, message) {
   
   document.body.appendChild(modal);
   
-  // Auto-close after 5 seconds
+  // Auto-close after 8 seconds
   setTimeout(() => {
     if (modal.parentElement) {
       modal.remove();
     }
-  }, 5000);
+  }, 8000);
 }
 
 // Initialize mobile menu
@@ -550,32 +808,23 @@ function escapeHtml(text) {
   return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
 
-// Utility function to format date
-function formatDate(date) {
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
-
-// Make some functions available globally for debugging
+// Make some functions available globally
 window.KATIPUDROID = {
   loadFeedbacks,
   firebaseReady: () => firebaseReady,
+  resetForm,
   testConnection: () => {
     console.log('🧪 Testing connection...');
     console.log('Firebase DB:', window.firebaseDb);
     console.log('Submit function:', window.submitFeedback);
     console.log('Get function:', window.getRecentFeedbacks);
+    console.log('OTP functions:', window.generateAndSendOTP, window.verifyOTP);
     console.log('Ready state:', firebaseReady);
   }
 };
 
 // Log when script loads
-console.log('🎮 KATIPUDROID index.js loaded successfully');
+console.log('🎮 KATIPUDROID index.js with OTP support loaded successfully');
 
 // Add smooth scrolling for anchor links
 document.addEventListener('click', function(e) {
@@ -593,7 +842,9 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// Add loading state to page
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('📄 Page fully loaded');
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+  if (otpTimer) {
+    clearInterval(otpTimer);
+  }
 });
