@@ -142,35 +142,47 @@
   </section>
 
 <!--characters card-->
-  <section class="game-section">
+  <!-- Replace your existing characters section with this -->
+<section class="game-section">
   <h2 class="line-title">Characters</h2>
-  <div class="owl-carousel custom-carousel owl-theme">
-    <div class="item active" style="background-image: url(img/Bayani-Art-Presidente-Macario-Sakay.jpg);">
-      <div class="item-desc">
-        <h3>Macario Sakay</h3>
-        <p>Macario Sakay was a member of the Katipunan who upheld its ideals of Philippine independence even after Spain's defeat.</p>
+  
+  <div class="carousel-container">
+    <!-- Custom Navigation Arrows -->
+    <button class="custom-nav nav-prev" id="prevBtn">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    
+    <button class="custom-nav nav-next" id="nextBtn">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+
+    <!-- Your existing carousel -->
+    <div class="owl-carousel custom-carousel owl-theme">
+      <div class="item active" style="background-image: url(img/Bayani-Art-Presidente-Macario-Sakay.jpg);">
+        <div class="item-desc">
+          <h3>Macario Sakay</h3>
+          <p>Macario Sakay was a member of the Katipunan who upheld its ideals of Philippine independence even after Spain's defeat.</p>
+        </div>
+      </div>
+      <div class="item" style="background-image: url(img/640px-Andres_Bonifacio.jpg);">
+        <div class="item-desc">
+          <h3>Andres Bonifacio</h3>
+          <p>Andrés Bonifacio was the founder and leader of the Katipunan, a secret revolutionary society that fought for Philippine independence from Spanish colonial rule.</p>
+        </div>
+      </div>
+      <div class="item" style="background-image: url(img/PH_nhi_melchora_aquino.jpg);">
+        <div class="item-desc">
+          <h3>Tandang Sora</h3>
+          <p>Tandang Sora, whose real name was Melchora Aquino, was known as the Mother of the Philippine Revolution for aiding members of the Katipunan. She provided food, shelter, and medical care to revolutionaries, earning deep respect despite being exiled by Spanish authorities for her support.</p>
+        </div>
+      </div>
+      <div class="item" style="background-image: url(img/emilio_aguinaldo.jpg);">
+        <div class="item-desc">
+          <h3>Emilio Aguinaldo</h3>
+          <p>Emilio Aguinaldo was the first president of the Philippines and a key leader in the struggle for independence from both Spain and the United States.</p>
+        </div>
       </div>
     </div>
-    <div class="item" style="background-image: url(img/640px-Andres_Bonifacio.jpg);">
-      <div class="item-desc">
-        <h3>Andres Bonifacio</h3>
-        <p>Andrés Bonifacio was the founder and leader of the Katipunan, a secret revolutionary society that fought for Philippine independence from Spanish colonial rule.</p>
-      </div>
-    </div>
-    <div class="item" style="background-image: url(img/PH_nhi_melchora_aquino.jpg);">
-      <div class="item-desc">
-        <h3>Tandang Sora</h3>
-        <p>Tandang Sora, whose real name was Melchora Aquino, was known as the Mother of the Philippine Revolution for aiding members of the Katipunan.
-She provided food, shelter, and medical care to revolutionaries, earning deep respect despite being exiled by Spanish authorities for her support.</p>
-      </div>
-    </div>
-    <div class="item" style="background-image: url(img/emilio_aguinaldo.jpg);">
-      <div class="item-desc">
-        <h3>Emilio Aguinaldo</h3>
-        <p>Emilio Aguinaldo was the first president of the Philippines and a key leader in the struggle for independence from both Spain and the United States.</p>
-      </div>
-    </div>
-  </div>
   </div>
 </section>
 
@@ -178,10 +190,10 @@ She provided food, shelter, and medical care to revolutionaries, earning deep re
   <section id="developers">
     <h2>Developers</h2>
     <div class="developers">
-      <div class="dev-card"><img src=developers/lim.jpg alt="Backend"><h4>Backend Developer</h4><p>Prince Reneil E. Lim</p></div>
-      <div class="dev-card"><img src=developers/bautista.JPG alt="3D Modeler"><h4>3D Modeler</h4><p>Juliana Pricilla R. Bautista</p></div>
-      <div class="dev-card"><img src=developers/clang.png alt="UI/UX"><h4>UI/UX & 2D Artist</h4><p>Clarisse Althea P. Astrologo</p></div>
-      <div class="dev-card"><img src=developers/alanzalon.jpg alt="DB Programmer"><h4>Database Programmer</h4><p>Aldrin Mel G. Alanzalon</p></div>
+      <div class="dev-card"><img src=img/developers/lim.jpg alt="Backend"><h4>Backend Developer</h4><p>Prince Reneil E. Lim</p></div>
+      <div class="dev-card"><img src=img/developers/bautista.JPG alt="3D Modeler"><h4>3D Modeler</h4><p>Juliana Pricilla R. Bautista</p></div>
+      <div class="dev-card"><img src=img/developers/clang.png alt="UI/UX"><h4>UI/UX & 2D Artist</h4><p>Clarisse Althea P. Astrologo</p></div>
+      <div class="dev-card"><img src=img/developers/alanzalon.jpg alt="DB Programmer"><h4>Database Programmer</h4><p>Aldrin Mel G. Alanzalon</p></div>
     </div>
   </section>
 
@@ -290,7 +302,7 @@ She provided food, shelter, and medical care to revolutionaries, earning deep re
 </script>
 
 <!-- Firebase Configuration - MUST be loaded first -->
-<script src="js/firebase-config.js" type="module"></script>
+<script src="src/js/firebase-config.js" type="module"></script>
 
 <!-- Main JavaScript -->
 <script src="index.js"></script>

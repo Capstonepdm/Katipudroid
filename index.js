@@ -12,18 +12,85 @@ let otpTimeLeft = 600; // 10 minutes in seconds
 $(document).ready(function () {
   console.log('📱 DOM loaded, initializing...');
   
-  // Initialize Owl Carousel
-  $(".custom-carousel").owlCarousel({
+  // Initialize Owl Carousel with navigation
+  const carousel = $(".custom-carousel").owlCarousel({
     autoWidth: true,
-    loop: true
+    loop: true,
+    margin: 10,
+    nav: false,  // Disable default navigation (we'll use custom arrows)
+    dots: true,  // Enable dots navigation
+    mouseDrag: true,
+    touchDrag: true,
+    smartSpeed: 600,
+    autoplay: false, // Disable autoplay initially
+    responsive: {
+      0: {
+        items: 1
+      },
+      600: {
+        items: 2
+      },
+      1000: {
+        items: 3
+      }
+    }
   });
 
+  // Handle item clicks (keep existing functionality)
   $(".custom-carousel .item").click(function () {
     $(".custom-carousel .item").not($(this)).removeClass("active");
     $(this).toggleClass("active");
   });
 
-  // Wait for Firebase to initialize, then load feedbacks
+  // Custom arrow navigation
+  $("#nextBtn").click(function() {
+    carousel.trigger('next.owl.carousel');
+    console.log('Next button clicked');
+  });
+
+  $("#prevBtn").click(function() {
+    carousel.trigger('prev.owl.carousel');
+    console.log('Previous button clicked');
+  });
+
+  // Keyboard navigation (optional enhancement)
+  $(document).keydown(function(e) {
+    if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+      if (e.keyCode === 37) { // Left arrow key
+        carousel.trigger('prev.owl.carousel');
+      } else if (e.keyCode === 39) { // Right arrow key
+        carousel.trigger('next.owl.carousel');
+      }
+    }
+  });
+
+  // Auto-play functionality (optional)
+  let autoplayInterval;
+  
+  function startAutoplay() {
+    autoplayInterval = setInterval(function() {
+      carousel.trigger('next.owl.carousel');
+    }, 5000); // Change slide every 5 seconds
+  }
+
+  function stopAutoplay() {
+    clearInterval(autoplayInterval);
+  }
+
+  // Uncomment these lines if you want auto-play
+  // startAutoplay();
+  
+  // Pause autoplay on hover
+  $('.carousel-container').hover(
+    function() {
+      stopAutoplay();
+    },
+    function() {
+      // startAutoplay(); // Uncomment to resume autoplay after hover
+    }
+  );
+
+  // Continue with your existing app initialization...
   initializeApp();
 });
 

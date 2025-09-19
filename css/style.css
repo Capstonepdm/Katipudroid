@@ -642,3 +642,119 @@ animation: animateWave_02 3s linear infinite;
 0% { background-position-x: 0px; }
 100% { background-position-x: 1000px; }
 }
+
+.carousel-container {
+  position: relative;
+  margin: 0 60px; /* Space for arrows */
+}
+
+.custom-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(45deg, #ff4655, #ff6b7a);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 70, 85, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-nav:hover {
+  background: linear-gradient(45deg, #ff6b7a, #ff4655);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 20px rgba(255, 70, 85, 0.5);
+}
+
+.custom-nav:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.nav-prev {
+  left: -60px;
+}
+
+.nav-next {
+  right: -60px;
+}
+
+/* Hide default Owl Carousel navigation */
+.owl-nav {
+  display: none !important;
+}
+
+/* Enhanced dots styling */
+.owl-dots {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.owl-dot {
+  display: inline-block !important;
+  margin: 0 5px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3) !important;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.owl-dot.active {
+  background: #ff4655 !important;
+  transform: scale(1.2);
+}
+
+.owl-dot:hover {
+  background: rgba(255, 70, 85, 0.7) !important;
+}
+
+/* Responsive navigation arrows */
+@media (max-width: 768px) {
+  .carousel-container {
+    margin: 0 40px;
+  }
+
+  .custom-nav {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .nav-prev {
+    left: -45px;
+  }
+
+  .nav-next {
+    right: -45px;
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel-container {
+    margin: 0 30px;
+  }
+
+  .custom-nav {
+    width: 35px;
+    height: 35px;
+    font-size: 14px;
+  }
+
+  .nav-prev {
+    left: -35px;
+  }
+
+  .nav-next {
+    right: -35px;
+  }
+}
