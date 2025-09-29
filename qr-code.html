@@ -34,6 +34,7 @@
       padding: 40px;
       text-align: center;
       border-bottom: 4px solid #ff4655;
+      position: relative;
     }
 
     .logo {
@@ -181,6 +182,27 @@
       transform: translateY(-2px);
     }
 
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 25px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      margin-bottom: 30px;
+    }
+
+    .back-button:hover {
+      background: #ff4655;
+      border-color: #ff4655;
+      transform: translateX(-5px);
+    }
+
     .footer {
       background: #f8f9fa;
       padding: 20px;
@@ -218,6 +240,14 @@
         font-size: 1.8rem;
       }
 
+      .header .back-button {
+        position: static !important;
+        display: inline-flex;
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+        padding: 10px 20px;
+      }
+
       .content {
         padding: 30px 20px;
       }
@@ -237,6 +267,10 @@
 <body>
   <div class="print-section">
     <div class="header">
+      <a href="index.html" class="back-button" style="position: absolute; top: 20px; left: 20px;">
+        <i class="fas fa-arrow-left"></i>
+        Back to Home
+      </a>
       <h1>🎮 KATIPUDROID</h1>
       <p>A 3D Role-Playing Game on the Katipunan</p>
       <p style="font-size: 0.9rem; margin-top: 10px;">During the Spanish Colonization</p>
