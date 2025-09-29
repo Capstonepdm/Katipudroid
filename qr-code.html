@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KATIPUDROID - Website Link & QR Code</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #0f1923 0%, #1a2332 100%);
+      color: white;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .print-section {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      color: #000;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .header {
+      background: linear-gradient(135deg, #0f1923 0%, #1a2332 100%);
+      padding: 40px;
+      text-align: center;
+      border-bottom: 4px solid #ff4655;
+    }
+
+    .logo {
+      width: 150px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      color: #ff4655;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .header p {
+      color: #ccc;
+      font-size: 1.1rem;
+    }
+
+    .content {
+      padding: 50px 40px;
+      text-align: center;
+    }
+
+    .section {
+      margin-bottom: 40px;
+    }
+
+    .section h2 {
+      color: #ff4655;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .website-link {
+      background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+      padding: 25px;
+      border-radius: 15px;
+      border: 3px solid #ff4655;
+      margin: 20px 0;
+    }
+
+    .website-link a {
+      color: #0066cc;
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-decoration: none;
+      word-break: break-all;
+      transition: color 0.3s ease;
+    }
+
+    .website-link a:hover {
+      color: #ff4655;
+      text-decoration: underline;
+    }
+
+    .qr-container {
+      background: #f9f9f9;
+      padding: 30px;
+      border-radius: 15px;
+      display: inline-block;
+      border: 3px solid #ddd;
+      margin: 20px 0;
+    }
+
+    #qrcode {
+      display: inline-block;
+    }
+
+    .qr-label {
+      margin-top: 15px;
+      font-size: 1rem;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .instructions {
+      background: #fff3cd;
+      border-left: 5px solid #ffc107;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: left;
+      margin: 30px 0;
+    }
+
+    .instructions h3 {
+      color: #856404;
+      margin-bottom: 15px;
+      font-size: 1.3rem;
+    }
+
+    .instructions ol {
+      margin-left: 25px;
+      color: #856404;
+    }
+
+    .instructions li {
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      padding: 15px 30px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .button-primary {
+      background: linear-gradient(45deg, #ff4655, #ff6b7a);
+      color: white;
+    }
+
+    .button-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(255, 70, 85, 0.3);
+    }
+
+    .button-secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    .button-secondary:hover {
+      background: #5a6268;
+      transform: translateY(-2px);
+    }
+
+    .footer {
+      background: #f8f9fa;
+      padding: 20px;
+      text-align: center;
+      border-top: 2px solid #dee2e6;
+    }
+
+    .footer p {
+      color: #666;
+      margin: 5px 0;
+    }
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+
+      .print-section {
+        box-shadow: none;
+        border-radius: 0;
+      }
+
+      .button-group {
+        display: none;
+      }
+
+      .instructions {
+        page-break-inside: avoid;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .header h1 {
+        font-size: 1.8rem;
+      }
+
+      .content {
+        padding: 30px 20px;
+      }
+
+      .website-link a {
+        font-size: 1.1rem;
+      }
+
+      .button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="print-section">
+    <div class="header">
+      <h1>🎮 KATIPUDROID</h1>
+      <p>A 3D Role-Playing Game on the Katipunan</p>
+      <p style="font-size: 0.9rem; margin-top: 10px;">During the Spanish Colonization</p>
+    </div>
+
+    <div class="content">
+      <div class="section">
+        <h2>
+          <i class="fas fa-link"></i>
+          Official Website
+        </h2>
+        <div class="website-link">
+          <a href="https://katipudroidcapstone.netlify.app/" target="_blank" id="website-url">
+            https://katipudroidcapstone.netlify.app/
+          </a>
+        </div>
+        <p style="color: #666; margin-top: 10px;">
+          <i class="fas fa-mouse-pointer"></i> Click the link above to visit our website
+        </p>
+      </div>
+
+      <div class="section">
+        <h2>
+          <i class="fas fa-qrcode"></i>
+          Scan QR Code
+        </h2>
+        <div class="qr-container">
+          <div id="qrcode"></div>
+          <div class="qr-label">
+            <i class="fas fa-mobile-alt"></i> Scan with your phone camera
+          </div>
+        </div>
+      </div>
+
+      <div class="instructions">
+        <h3><i class="fas fa-info-circle"></i> How to Use This Page</h3>
+        <ol>
+          <li>
+            <strong>To visit the website:</strong> Click the blue link above or type it in your browser
+          </li>
+          <li>
+            <strong>To scan the QR code:</strong> Open your phone's camera app and point it at the QR code
+          </li>
+          <li>
+            <strong>To print:</strong> Click the "Print This Page" button below and select your printer
+          </li>
+          <li>
+            <strong>To download:</strong> Click the "Download as PDF" button to save this page
+          </li>
+          <li>
+            <strong>To share:</strong> You can share this file via email, social media, or print it on posters!
+          </li>
+        </ol>
+      </div>
+
+      <div class="button-group">
+        <button class="button button-primary" onclick="printPage()">
+          <i class="fas fa-print"></i>
+          Print This Page
+        </button>
+        <button class="button button-primary" onclick="downloadQR()">
+          <i class="fas fa-download"></i>
+          Download QR Code Only
+        </button>
+        <button class="button button-secondary" onclick="copyLink()">
+          <i class="fas fa-copy"></i>
+          Copy Website Link
+        </button>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p><strong>KATIPUDROID</strong> - Experience Philippine History Through Gaming</p>
+      <p>© 2025 KATIPUDROID | All Rights Reserved</p>
+      <p style="font-size: 0.9rem; margin-top: 10px;">
+        <i class="fas fa-envelope"></i> For inquiries, visit our website
+      </p>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  
+  <script>
+    window.addEventListener('load', function() {
+      const websiteUrl = document.getElementById('website-url').textContent;
+      
+      new QRCode(document.getElementById('qrcode'), {
+        text: websiteUrl,
+        width: 256,
+        height: 256,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    });
+
+    function printPage() {
+      window.print();
+    }
+
+    function downloadQR() {
+      const canvas = document.querySelector('#qrcode canvas');
+      
+      if (!canvas) {
+        alert('⚠️ QR code not found! Please refresh the page.');
+        return;
+      }
+
+      canvas.toBlob(function(blob) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = 'katipudroid-qrcode.png';
+        link.href = url;
+        link.click();
+        
+        alert('✅ QR Code downloaded successfully!');
+      });
+    }
+
+    function copyLink() {
+      const websiteUrl = document.getElementById('website-url').textContent;
+      
+      const tempInput = document.createElement('input');
+      tempInput.value = websiteUrl;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      
+      alert('✅ Website link copied to clipboard!');
+    }
+  </script>
+</body>
+</html>
