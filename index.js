@@ -1,4 +1,4 @@
-// index.js - Updated with OTP verification
+// index.js - Fixed: Remove duplicate carousel dots
 
 // Global variables
 let firebaseReady = false;
@@ -8,8 +8,7 @@ let currentFormData = null;
 let otpTimer = null;
 let otpTimeLeft = 600; // 10 minutes in seconds
 
-// Owl Carousel initialization
-// Owl Carousel initialization - Fixed duplicated dots
+// Owl Carousel initialization - FIXED: No more duplicate dots
 $(document).ready(function () {
   console.log('📱 DOM loaded, initializing...');
   
@@ -18,17 +17,18 @@ $(document).ready(function () {
     autoWidth: true,
     loop: true,
     margin: 10,
-    nav: false,  // Disable default navigation (we'll use custom arrows)
-    dots: true,  // Enable dots navigation
-    dotsContainer: false, // Let Owl Carousel manage dots automatically
+    nav: false,
+    dots: true,
+    dotsEach: false,
+    dotsContainer: false,
     mouseDrag: true,
     touchDrag: true,
     smartSpeed: 600,
-    autoplay: false, // Disable autoplay initially
+    autoplay: false,
     responsive: {
       0: {
         items: 1,
-        dots: true  // Ensure dots are enabled on mobile
+        dots: true
       },
       600: {
         items: 2,
@@ -39,21 +39,32 @@ $(document).ready(function () {
         dots: true
       }
     },
-    // Callback to ensure dots are properly initialized
     onInitialized: function(event) {
-      // Remove any duplicate dots that might exist
-      $('.owl-dots').not('.owl-carousel .owl-dots').remove();
-      console.log('Owl Carousel initialized with dots');
+      // Remove ALL duplicate dots on initialization
+      removeDuplicateDots();
+      console.log('✅ Owl Carousel initialized - dots cleaned');
     },
     onChanged: function(event) {
-      // Ensure only one set of dots exists after changes
-      if ($('.owl-dots').length > 1) {
-        $('.owl-dots').not('.owl-carousel .owl-dots').remove();
-      }
+      // Remove duplicates after any change
+      removeDuplicateDots();
+    },
+    onRefreshed: function(event) {
+      // Remove duplicates after refresh
+      removeDuplicateDots();
     }
   });
 
-  // Handle item clicks (keep existing functionality)
+  // Function to remove duplicate dots
+  function removeDuplicateDots() {
+    // Keep only the first .owl-dots, remove all others
+    const allDots = $('.owl-dots');
+    if (allDots.length > 1) {
+      allDots.slice(1).remove();
+      console.log('🧹 Removed duplicate dots');
+    }
+  }
+
+  // Handle item clicks
   $(".custom-carousel .item").click(function () {
     $(".custom-carousel .item").not($(this)).removeClass("active");
     $(this).toggleClass("active");
@@ -62,20 +73,18 @@ $(document).ready(function () {
   // Custom arrow navigation
   $("#nextBtn").click(function() {
     carousel.trigger('next.owl.carousel');
-    console.log('Next button clicked');
   });
 
   $("#prevBtn").click(function() {
     carousel.trigger('prev.owl.carousel');
-    console.log('Previous button clicked');
   });
 
-  // Keyboard navigation (optional enhancement)
+  // Keyboard navigation
   $(document).keydown(function(e) {
     if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
-      if (e.keyCode === 37) { // Left arrow key
+      if (e.keyCode === 37) {
         carousel.trigger('prev.owl.carousel');
-      } else if (e.keyCode === 39) { // Right arrow key
+      } else if (e.keyCode === 39) {
         carousel.trigger('next.owl.carousel');
       }
     }
@@ -87,34 +96,33 @@ $(document).ready(function () {
   function startAutoplay() {
     autoplayInterval = setInterval(function() {
       carousel.trigger('next.owl.carousel');
-    }, 5000); // Change slide every 5 seconds
+    }, 5000);
   }
 
   function stopAutoplay() {
     clearInterval(autoplayInterval);
   }
 
-  // Uncomment these lines if you want auto-play
-  // startAutoplay();
-  
   // Pause autoplay on hover
   $('.carousel-container').hover(
     function() {
       stopAutoplay();
     },
     function() {
-      // startAutoplay(); // Uncomment to resume autoplay after hover
+      // Uncomment to resume autoplay after hover
+      // startAutoplay();
     }
   );
 
-  // Additional fix: Remove duplicate dots after carousel is fully loaded
+  // FINAL CLEANUP: Remove any remaining duplicate dots after everything loads
   setTimeout(function() {
-    const dotContainers = $('.owl-dots');
-    if (dotContainers.length > 1) {
-      console.log('Removing duplicate dots...');
-      dotContainers.not(':first').remove();
-    }
+    removeDuplicateDots();
   }, 1000);
+
+  // Also clean up after window resize
+  $(window).on('resize', function() {
+    setTimeout(removeDuplicateDots, 100);
+  });
 
   // Continue with your existing app initialization...
   initializeApp();
@@ -125,19 +133,10 @@ async function initializeApp() {
   console.log('🚀 Initializing KATIPUDROID app...');
   
   try {
-    // Initialize star rating first
     initializeStarRating();
-    
-    // Initialize mobile menu
     initializeMobileMenu();
-    
-    // Initialize OTP functionality
     initializeOTPSystem();
-    
-    // Wait for Firebase and then load feedbacks
     await waitForFirebaseAndLoad();
-    
-    // Initialize feedback form
     initializeFeedbackForm();
     
     console.log('✅ App initialization complete');
@@ -152,17 +151,15 @@ async function waitForFirebaseAndLoad() {
   console.log('🔥 Waiting for Firebase...');
   
   try {
-    // Check if Firebase wait function exists
     if (window.waitForFirebase) {
       await window.waitForFirebase();
       console.log('✅ Firebase ready via waitForFirebase');
       firebaseReady = true;
       loadFeedbacks();
     } else {
-      // Fallback: wait and check periodically
       console.log('⏳ Using fallback Firebase check...');
       let attempts = 0;
-      const maxAttempts = 100; // 10 seconds total
+      const maxAttempts = 100;
       
       const checkFirebase = setInterval(() => {
         attempts++;
@@ -194,11 +191,9 @@ function initializeOTPSystem() {
   const resendBtn = document.getElementById('resend-btn');
   
   if (otpInput) {
-    // Only allow numbers in OTP input
     otpInput.addEventListener('input', function(e) {
       e.target.value = e.target.value.replace(/[^0-9]/g, '');
       
-      // Auto-verify when 6 digits are entered
       if (e.target.value.length === 6) {
         verifyOTPAndSubmit();
       }
@@ -269,7 +264,6 @@ function initializeStarRating() {
     return;
   }
   
-  // Set default rating to 5 stars
   updateStarDisplay(5);
   if (ratingInput) ratingInput.value = 5;
   if (ratingText) ratingText.textContent = ratingLabels[5];
@@ -296,7 +290,6 @@ function initializeStarRating() {
     });
   });
   
-  // Reset to selected rating on mouse leave
   const starRating = document.getElementById('star-rating');
   if (starRating && ratingInput && ratingText) {
     starRating.addEventListener('mouseleave', function() {
@@ -332,7 +325,6 @@ async function loadFeedbacks() {
     return;
   }
   
-  // Show loading state
   feedbackList.innerHTML = `
     <div class="feedback-card" style="text-align: center;">
       <i class="fas fa-spinner fa-spin fa-2x" style="color: #ff4655; margin-bottom: 1rem;"></i>
@@ -354,7 +346,6 @@ async function loadFeedbacks() {
     if (data.success && data.feedbacks) {
       console.log(`✅ Loaded ${data.feedbacks.length} feedbacks from Firebase`);
       
-      // Clear loading state
       feedbackList.innerHTML = '';
       
       if (data.feedbacks.length === 0) {
@@ -371,17 +362,14 @@ async function loadFeedbacks() {
         return;
       }
       
-      // Show only first 3 feedbacks on home page
       const recentFeedbacks = data.feedbacks.slice(0, 3);
       
-      // Add feedbacks from Firebase
       recentFeedbacks.forEach((feedback, index) => {
         console.log(`📝 Adding feedback ${index + 1}:`, feedback.name);
         
         const card = document.createElement('div');
         card.classList.add('feedback-card');
         
-        // Format the date
         const date = new Date(feedback.created_at);
         const formattedDate = date.toLocaleDateString('en-US', {
           year: 'numeric',
@@ -389,7 +377,6 @@ async function loadFeedbacks() {
           day: 'numeric'
         });
         
-        // Create star display
         const stars = createStarDisplay(feedback.rating || 5);
         
         card.innerHTML = `
@@ -403,12 +390,10 @@ async function loadFeedbacks() {
           <p>${escapeHtml(feedback.message)}</p>
         `;
         
-        // Add fade-in animation
         card.style.opacity = '0';
         card.style.transform = 'translateY(20px)';
         feedbackList.appendChild(card);
         
-        // Animate in
         setTimeout(() => {
           card.style.transition = 'all 0.5s ease';
           card.style.opacity = '1';
@@ -416,7 +401,6 @@ async function loadFeedbacks() {
         }, index * 200);
       });
       
-      // Add "Show More" button if there are more than 3 feedbacks
       if (data.feedbacks.length > 3) {
         const showMoreBtn = document.createElement('div');
         showMoreBtn.classList.add('feedback-card', 'show-more-card');
@@ -433,7 +417,6 @@ async function loadFeedbacks() {
           </div>
         `;
         
-        // Add with animation
         showMoreBtn.style.opacity = '0';
         showMoreBtn.style.transform = 'translateY(20px)';
         feedbackList.appendChild(showMoreBtn);
@@ -490,7 +473,7 @@ function initializeFeedbackForm() {
   console.log('✅ Feedback form initialized');
 }
 
-// Handle feedback form submission (Step 1: Send OTP)
+// Handle feedback form submission
 async function handleFeedbackSubmit(e) {
   e.preventDefault();
   
@@ -503,69 +486,55 @@ async function handleFeedbackSubmit(e) {
   const submitBtn = form.querySelector('button[type="submit"]');
   
   try {
-    // Get form data
     const name = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim();
     const message = document.getElementById('messageText').value.trim();
     const rating = document.getElementById('rating').value;
     
-    // Basic validation
     if (!name || !email || !message || !rating) {
       alert('Please fill in all fields and select a rating');
       return;
     }
     
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       alert('Please enter a valid email address');
       return;
     }
     
-    // Check if OTP already sent and we're in verification mode
     if (otpSent) {
       await verifyOTPAndSubmit();
       return;
     }
     
-    // Store form data for later submission
     currentFormData = { name, email, message, rating: parseInt(rating) };
     
     console.log('📤 Sending OTP to:', email);
     feedbackFormSubmitting = true;
     
-    // Show loading state
     const originalText = submitBtn.textContent;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending OTP...';
     submitBtn.disabled = true;
     
-    // Check Firebase availability
     if (!firebaseReady || !window.generateAndSendOTP) {
       alert('Database connection not ready. Please wait a moment and try again.');
       return;
     }
     
-    // Send OTP
     const result = await window.generateAndSendOTP(email, name);
     
     if (result.success) {
       console.log('✅ OTP sent successfully');
       
-      // Show OTP section
       showOTPSection();
-      
-      // Update step indicator
       updateStepIndicator(2);
       
-      // Update button
       submitBtn.textContent = 'Verify & Submit Feedback';
       submitBtn.disabled = false;
       otpSent = true;
       
-      // Start timer
       startOTPTimer();
       
-      // Show success message
       showSuccessMessage('OTP Sent!', 
         `A 6-digit verification code has been sent to ${email}. Please check your email and enter the code below.`);
       
@@ -592,7 +561,6 @@ function showOTPSection() {
   if (otpSection) {
     otpSection.classList.add('show');
     
-    // Focus on OTP input
     setTimeout(() => {
       const otpInput = document.getElementById('otp-input');
       if (otpInput) {
@@ -604,7 +572,7 @@ function showOTPSection() {
 
 // Start OTP timer
 function startOTPTimer() {
-  otpTimeLeft = 600; // 10 minutes
+  otpTimeLeft = 600;
   const timerElement = document.getElementById('otp-timer');
   const resendBtn = document.getElementById('resend-btn');
   
@@ -633,7 +601,6 @@ function startOTPTimer() {
         resendBtn.textContent = 'Send New Code';
       }
     } else if (otpTimeLeft <= 60) {
-      // Enable resend button in last minute
       if (resendBtn) {
         resendBtn.disabled = false;
         resendBtn.innerHTML = '<i class="fas fa-redo"></i> Resend Code';
@@ -661,11 +628,9 @@ async function resendOTP() {
     if (result.success) {
       console.log('✅ OTP resent successfully');
       
-      // Restart timer
       clearInterval(otpTimer);
       startOTPTimer();
       
-      // Clear previous OTP input
       const otpInput = document.getElementById('otp-input');
       if (otpInput) {
         otpInput.value = '';
@@ -715,16 +680,13 @@ async function verifyOTPAndSubmit() {
     
     console.log('🔐 Verifying OTP...');
     
-    // Verify OTP
     const verifyResult = await window.verifyOTP(currentFormData.email, otp);
     
     if (verifyResult.success) {
       console.log('✅ OTP verified successfully');
       
-      // Update step indicator
       updateStepIndicator(3);
       
-      // Submit feedback
       submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
       
       console.log('📤 Submitting feedback...');
@@ -733,17 +695,13 @@ async function verifyOTPAndSubmit() {
       if (submitResult.success) {
         console.log('✅ Feedback submitted successfully!');
         
-        // Clear timer
         clearInterval(otpTimer);
         
-        // Show success message
         showSuccessMessage('Feedback Submitted Successfully!', 
           `Thank you ${currentFormData.name}! Your ${currentFormData.rating}-star review has been submitted and will appear on our website shortly.`);
         
-        // Reset form
         resetForm();
         
-        // Reload feedbacks
         setTimeout(() => {
           loadFeedbacks();
         }, 2000);
@@ -772,13 +730,11 @@ async function verifyOTPAndSubmit() {
 
 // Reset form to initial state
 function resetForm() {
-  // Reset form fields
   const form = document.getElementById('feedback-form');
   if (form) {
     form.reset();
   }
   
-  // Reset rating
   document.getElementById('rating').value = 5;
   updateStarDisplay(5);
   const ratingText = document.getElementById('rating-text');
@@ -786,25 +742,19 @@ function resetForm() {
     ratingText.textContent = '5 Stars - Excellent';
   }
   
-  // Hide OTP section
   const otpSection = document.getElementById('otp-section');
   if (otpSection) {
     otpSection.classList.remove('show');
   }
   
-  // Reset button
   const submitBtn = document.getElementById('submit-btn');
   if (submitBtn) {
     submitBtn.textContent = 'Send OTP & Verify';
   }
   
-  // Clear timer
   clearInterval(otpTimer);
-  
-  // Reset step indicator
   updateStepIndicator(1);
   
-  // Reset variables
   otpSent = false;
   currentFormData = null;
   feedbackFormSubmitting = false;
@@ -850,7 +800,6 @@ function showSuccessMessage(title, message) {
   
   document.body.appendChild(modal);
   
-  // Auto-close after 8 seconds
   setTimeout(() => {
     if (modal.parentElement) {
       modal.remove();
@@ -889,7 +838,7 @@ function createStarDisplay(rating) {
   return stars;
 }
 
-// Helper function to escape HTML to prevent XSS
+// Helper function to escape HTML
 function escapeHtml(text) {
   const map = {
     '&': '&amp;',
@@ -921,7 +870,7 @@ console.log('🎮 KATIPUDROID index.js with OTP support loaded successfully');
 
 // Add smooth scrolling for anchor links
 document.addEventListener('click', function(e) {
-  if (e.target.tagName === 'A' && e.target.getAttribute('href').startsWith('#')) {
+  if (e.target.tagName === 'A' && e.target.getAttribute('href') && e.target.getAttribute('href').startsWith('#')) {
     e.preventDefault();
     const targetId = e.target.getAttribute('href').substring(1);
     const targetElement = document.getElementById(targetId);

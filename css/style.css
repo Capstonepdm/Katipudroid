@@ -17,6 +17,27 @@ background-color: #0f1923;
 color: white;
 }
 
+/* REMOVE ALL CAROUSEL DOTS */
+.owl-dots {
+  display: none !important;
+}
+
+.owl-carousel .owl-dots {
+  display: none !important;
+}
+
+.game-section .owl-dots {
+  display: none !important;
+}
+
+.owl-theme .owl-dots {
+  display: none !important;
+}
+
+.owl-theme.custom-carousel .owl-dots {
+  display: none !important;
+}
+
 /* HEADER & NAVIGATION */
 /* Modern Navbar */
 header {
@@ -425,11 +446,6 @@ opacity: 1;
 -webkit-transform: translateY(0);
 transform: translateY(0);
 }
-.game-section .owl-theme.custom-carousel .owl-dots {
-margin-top: -20px;
-position: relative;
-z-index: 5;
-}
 
 /* responsive css */
 @media (min-width: 992px) and (max-width: 1199px) {
@@ -645,7 +661,7 @@ animation: animateWave_02 3s linear infinite;
 
 .carousel-container {
   position: relative;
-  margin: 0 60px; /* Space for arrows */
+  margin: 0 60px;
 }
 
 .custom-nav {
@@ -688,45 +704,4 @@ animation: animateWave_02 3s linear infinite;
 
 .owl-nav {
   display: none !important;
-}
-
-/* SINGLE, CLEAN SET OF DOT RULES - Remove all duplicates */
-.owl-carousel .owl-dots {
-  text-align: center;
-  margin-top: 30px;
-  display: block !important;
-}
-
-/* Hide any duplicate dots that might appear outside the carousel */
-.owl-dots:not(.owl-carousel .owl-dots) {
-  display: none !important;
-}
-
-.owl-carousel .owl-dots .owl-dot {
-  display: inline-block !important;
-  margin: 0 5px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3) !important;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-  outline: none;
-}
-
-.owl-carousel .owl-dots .owl-dot.active {
-  background: #ff4655 !important;
-  transform: scale(1.2);
-}
-
-.owl-carousel .owl-dots .owl-dot:hover {
-  background: rgba(255, 70, 85, 0.7) !important;
-}
-
-/* Ensure dots appear on mobile */
-@media (max-width: 768px) {
-  .owl-carousel .owl-dots {
-    display: block !important;
-  }
 }
