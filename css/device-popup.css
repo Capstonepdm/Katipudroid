@@ -1,0 +1,203 @@
+/* Device Detection Popup Styles */
+
+/* Popup Overlay */
+.device-popup-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 9999;
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.3s ease;
+}
+
+.device-popup-overlay.show {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Popup Container */
+.device-popup {
+  background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+  border: 3px solid #ff4655;
+  border-radius: 20px;
+  padding: 40px 30px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(255, 70, 85, 0.4);
+  animation: slideUp 0.4s ease;
+  position: relative;
+}
+
+/* Popup Icon */
+.popup-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  animation: bounce 1s ease infinite;
+}
+
+.popup-icon.error {
+  color: #ff4655;
+}
+
+.popup-icon.success {
+  color: #00ff00;
+}
+
+/* Popup Title */
+.popup-title {
+  color: #ff4655;
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+/* Popup Message */
+.popup-message {
+  color: #ccc;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 25px;
+}
+
+/* Device Info Box */
+.device-info {
+  background: rgba(255, 70, 85, 0.1);
+  border: 1px solid rgba(255, 70, 85, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  margin: 20px 0;
+}
+
+.device-info p {
+  color: #ccc;
+  margin: 5px 0;
+  font-size: 0.9rem;
+}
+
+.device-info strong {
+  color: #ff4655;
+}
+
+/* Popup Buttons */
+.popup-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 25px;
+}
+
+.popup-btn {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.popup-btn-primary {
+  background: linear-gradient(45deg, #ff4655, #ff6b7a);
+  color: white;
+}
+
+.popup-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 70, 85, 0.4);
+}
+
+.popup-btn-secondary {
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.popup-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Close Button (X) */
+.popup-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 1.5rem;
+  cursor: pointer;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.popup-close:hover {
+  background: rgba(255, 70, 85, 0.2);
+  color: #ff4655;
+  transform: rotate(90deg);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .device-popup {
+    padding: 30px 20px;
+  }
+  
+  .popup-icon {
+    font-size: 3rem;
+  }
+  
+  .popup-title {
+    font-size: 1.5rem;
+  }
+  
+  .popup-message {
+    font-size: 1rem;
+  }
+  
+  .popup-buttons {
+    flex-direction: column;
+  }
+  
+  .popup-btn {
+    width: 100%;
+  }
+}
